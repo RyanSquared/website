@@ -22,6 +22,7 @@ theme = "clarity"
 
 [params]
 author = "Ryan Heywood"
+email = "ryan@hashbang.sh"
 twitter = "@IAmRyanSquared"
 largeTwitterCard = false # set to true if you want to show a large twitter card image. The default is a small twitter card image
 introDescription = "Cypherpunk chat protocol nerd."
@@ -57,3 +58,23 @@ figurePositionLabel = "Figure" # the text before image number e.g Figure 1.0
 
 # Set the collapsed mobile navigation to either appear from the left or the right
 mobileNavigation = "left" # if you prefer right change to 'right'
+
+[params.podcast]
+title = "Digital Sovereignty"
+description = "Discussion of topics about security, privacy, and decentralization"
+# ::TODO:: reference to resources.Get-table image
+#image = ""
+
+[params.podcast.category]
+name = "Technology"
+subcategories = ["Security", "Privacy", "Decentralization"]
+
+[params.podcast.owner]
+name = "The Hashbang Team"
+email = "team@hashbang.sh"
+
+# episodic (can be viewed in any order) or serial (should be viewed in sequential order)
+type = "episodic"
+
+# ::TODO:: link to latest episode ?
+# mp3 = ""
