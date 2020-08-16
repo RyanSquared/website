@@ -1,7 +1,7 @@
 +++
 author = "Ryan Heywood"
 title = "Using systemd Timers Instead of crontabs"
-date = "2018-02-23"
+date = "2018-03-20"
 description = "An explanation of how systemd timers work"
 tags = [
     "linux",
