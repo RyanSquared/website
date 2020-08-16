@@ -1,0 +1,9 @@
+- item: "github"
+  url: "https://github.com/RyanSquared"
+- item: "twitter"
+  url: "https://twitter.com/IAmRyanSquared"
+#- item: "linkedin"
+#  url: "https://www.linkedin.com/in/charlesheywood"
+- item: "rss"
+  url: "index.xml"
+  internal:  true
