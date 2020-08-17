@@ -153,6 +153,8 @@ command `sudo systemd enable --now crontab`. To avoid running in duplicate with
 disabled, as future updates can re-enable `cron`. You can do this by running
 `sudo systemd mask cron`.
 
+---
+
 This article is a live post and will be updated if amendment is needed to
 clarify explanations of certain topics.
 
