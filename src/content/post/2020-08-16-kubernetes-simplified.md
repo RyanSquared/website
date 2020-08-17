@@ -32,11 +32,47 @@ an automatically scaling Prometheus instance[4].
 Resources, whose configuration files are called "Manifests", can be defined as
 either JSON or YAML. For the sake of simplicity, this guide will use YAML.
 
+## Why would I want Kubernetes? Is it worth it?
+
+Kubernetes will automatically manage your resources for you. If configured
+correctly, it can survive even if a "node", or a server in the cluster, becomes
+unaccessible, with no input required from the user. Kubernetes through some
+service providers can scale up workloads to massive amounts temporarily, which
+can be incredibly useful if your service becomes very popular and you suddenly
+gain a lot of traffic.
+
+Running a Kubernetes system means you can reduce your downtime to an insanely
+small level, and increase your computational capacity to an insanely large
+level. While this may not seem useful up front, you may consider it essential
+down the line.
+
+#### Why not just use Docker Compose?
+
+Docker Compose is a software that I have a reasonable amount of experience with
+but at times I commonly notice that I'm continuing to add stuff on top of my
+container images just to get them to work properly.
+
+Docker Compose does not survive a machine failure, or a node that has been
+made unrecoverable. If you lose the machine that Docker-Compose runs on, you
+have now lost all the information in that Docker-Compose system.
+
+Kubernetes has multiple implementations, provided by DigitalOcean, Linode, AWS,
+GCP, Azure, as well as some bare-metal implementations such as [kind] and
+[minikube] for testing, and [microk8s] and [k3s] for production machines.
+These implementations allow for better integration with Kubernetes in a way
+that can - most times - survive the loss of a node.
+
 ### Setting up a Cluster
 
 If you'd like to follow along with this guide, I heavily recommend using the
-program kind[5], as it will let you deploy Kubernetes manifests locally. You
-can test that your cluster is working by using the command `kubectl version`.
+program [kind], as it will let you deploy Kubernetes manifests locally. You can
+test that your cluster is working by using the command `kubectl version`.
+
+#### Where is the State?
+
+When deploying a Manifest to Kubernetes, the basics of the interaction is that
+POST requests are made to Kubernetes REST endpoints, creating the resources and
+storing them in an etcd key-value distributed storage.
 
 ## Hello World
 
@@ -243,6 +279,9 @@ specifying the IP addresses for port-forward.
 This article is a live post and will be updated if amendment is needed to
 clarify explanations of certain topics.
 
+EDIT-2020-08-17: Add sections "Why would I want Kubernetes", "Why not just use
+Docker Compose", and "Where is the State"
+
 [1]: https://kubernetes.io/#kubernetes-k8s-docs-concepts-overview-what-is-kubernetes-is-an-open-source-system-for-automating-deployment-scaling-and-management-of-containerized-applications
 [2]: https://kubernetes.io/docs/tutorials/kubernetes-basics/
 [3]: https://docs.cilium.io/en/v1.8/policy/language/#services-based
@@ -254,3 +293,7 @@ clarify explanations of certain topics.
 [9]: https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
 [10]: https://hub.docker.com/r/nginxdemos/hello
 [11]: https://kubernetes.io/docs/concepts/services-networking/service/
+[kind]: https://kind.sigs.k8s.io/
+[minikube]: https://minikube.sigs.k8s.io/docs/
+[microk8s]: https://microk8s.io/
+[k3s]: https://k3s.io/
