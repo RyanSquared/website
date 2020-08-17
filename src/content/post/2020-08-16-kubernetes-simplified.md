@@ -3,7 +3,7 @@ author = "Ryan Heywood"
 title = "Kubernetes - Simplified"
 date = "2020-08-16 21:57:03 -0500"
 description = ""
-tags = []
+tags = ["simplified", "kubernetes", "docker"]
 featured = true
 +++
 
