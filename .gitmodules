@@ -1,3 +1,6 @@
 [submodule "src/themes/clarity"]
 	path = src/themes/clarity
 	url = https://github.com/chipzoller/hugo-clarity
+[submodule "src/themes/flax"]
+	path = src/themes/flax
+	url = https://github.com/RyanSquared/hugo-flax
