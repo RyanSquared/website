@@ -19,6 +19,8 @@ some reasons why both timers are essential to someone's workflow as well as why
 systemd should probably be chosen over cron implementations. As per usual, this
 is implementation dependent and other software may suit your usecase better.
 
+<!--more-->
+
 ## Timers
 
 Timers are useful for running things such as daily backups, alarms, and

@@ -4,8 +4,8 @@ ARG DEBIAN_VERSION=buster-slim
 ARG DEBIAN_DIGEST=sha256:0c679627b3a61b2e3ee902ec224b0505839bc2ad76d99530e5f0566e47ac8400
 
 FROM golang:${GOLANG_VERSION}@${GOLANG_DIGEST} as builder
-ARG HUGO_VERSION=0.62.1
-ARG HUGO_THEME=clarity
+ARG HUGO_VERSION=0.74.3
+ARG HUGO_THEME=flax
 RUN \
   wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_Linux-64bit.deb \
   && dpkg -i hugo_extended_${HUGO_VERSION}_Linux-64bit.deb

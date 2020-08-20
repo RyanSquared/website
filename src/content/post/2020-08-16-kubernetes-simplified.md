@@ -14,6 +14,8 @@ take a look at systems that I think aren't adequately explained in their own
 "getting started" documentation. Today, I'm taking a look at one of the most
 complicated systems I've used to date.
 
+<!--more-->
+
 ## What the Fuck is Kubernetes?
 
 Kubernetes is self described as an "open-source system for automating

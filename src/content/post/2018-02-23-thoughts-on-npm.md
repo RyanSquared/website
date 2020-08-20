@@ -17,6 +17,8 @@ using NPM sudo escalation would use the identity of the user as the owner of
 files modified by NPM, rather than the identity of root. This would happen for
 any file or directory that NPM would modify, when as root, AIUI.
 
+<!--more-->
+
 Relevant bug report [here][gh-issue-npm-npm-19883].
 
 > This issue has been happening ever since 5.7.0 was released a few hours ago.
