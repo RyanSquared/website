@@ -79,31 +79,60 @@ storing them in an etcd key-value distributed storage.
 ## Hello World
 
 The universal sign of someone's first program is to say "Hello World". We're
-going to set up the Docker container "nginxdemos/hello". We first need to
-start the program in our cluster. To do this, we can set up one of three
-things:
+going to set up a Docker container whose sole purpose is to do just that. We
+first need to start the program in our cluster, then we can read the logs of
+the container to get our Hello World message.
+
+We can set up one of three things to manage our program.
 
 - a pod
-- a replicaset
+- a job
 - a deployment
 
 ### What is a Pod?
 
-Defined as a Kubernetes concept, a pod is "a group of one or more containers
+Defined as a Kubernetes concept, a Pod is "a group of one or more containers
 with shared storage/network resources", as well as the configuration required
 for running those containers[6]. It is the smallest computational unit for
 Kubernetes; if you want to deploy a single container, you can deploy it in a
 pod.
 
-Pods do not automatically restart, and when they die, they are automatically
-deleted from Kubernetes completely. This means that they are not a good option
-for declarative configuration.
+Pods do not automatically restart, and when they are not managed by another
+resource and the containers within terminate, they are automatically deleted
+from Kubernetes completely. This means that they are not a good option for
+declarative configuration or oneshot containers where the return status of
+the container is important.
 
 We can make a pod for our cluster, but it will be removed from existence if it
-crashes. This means it is not a good resource for our use-case (as we can
-instead delete a resource ourselves later if we really want it gone).
+crashes. Because of this, we won't be able to access the logs and see our
+"Hello World". "This means it is not a good resource for our use-case (as we
+can instead delete a resource ourselves later if we really want it gone).
 
-### What is a ReplicaSet?
+## What is a Job?
+
+Defined as a Kubernetes concept, a Job "creates one or more Pods and ensures
+that a specified number of them successfully terminate". Jobs can be used to
+run a single Pod one time, run multiple Pods sequentially, or run multiple
+Pods in parallel.
+
+Jobs are not meant to have persistent Pods, and as such they are required to
+either restart when a command has failed, or to never restart a pod.
+
+## What is a Deployment?
+
+Defined as a Kubernetes concept [one I think is misnamed], a Deployment
+provides declarative updates for ReplicaSets[8]. A more appropriate description
+is that when a Deployment is updated, a ReplicaSet is created with the
+appropriate configuration to make sure Pods are deployed with the desired
+specification template.
+
+A Deployment creates ReplicaSets with certain labels to make sure the
+ReplicaSet only knows about pods made with its own configuration. This makes
+them useful for gradual rollouts, so services can use an older version of a
+ReplicaSet (with an old version of some software) while a new version is being
+set up by the deployment, creating a low - if not zero - downtime system.
+
+#### What is a ReplicaSet?
 
 Defined as a Kubernetes concept, a replica set is "[a resource whose] purpose
 is to maintain a stable set of replica Pods running at any given time"[7].
@@ -121,29 +150,88 @@ advanced configuration in this guide, it is not a good idea to use a
 ReplicaSet, as the ReplicaSet does not ensure that Pods match the configuration
 that the ReplicaSet creates them with.
 
-## What is a Deployment?
-
-Defined as a Kubernetes concept [one I think is misnamed], a Deployment
-provides declarative updates for ReplicaSets[8]. A more appropriate description
-is that when a Deployment is updated, a ReplicaSet is created with the
-appropriate configuration to make sure Pods are deployed with the desired
-specification template.
-
-A Deployment creates ReplicaSets with certain labels to make sure the
-ReplicaSet only knows about pods made with its own configuration. This makes
-them useful for gradual rollouts, so services can use an older version of a
-ReplicaSet (with an old version of some software) while a new version is being
-set up by the deployment, creating a low - if not zero - downtime system.
-
 ---
 
-For our use case, we will be using Deployments. Manifests in Kubernetes require
-a few specific fields to tell the Kubernetes controller how to create the
-required resources. The fields are `apiVersion`, `kind`, `metadata`, and
-`spec`[9]. For a Deployment, the API Version is `apps/v1`, the Kind is a
-"Deployment", the metadata will contain the name of the resource, and the
-spec will contain the configuration for that resource. We can also use a label
-to assign a name to our app, commonly the type of software used.
+For the use case of "Hello World", we will be using a Job, as it can be
+configured as a one-time process that will not be automatically recreated.
+
+Manifests in Kubernetes require a few specific fields to tell the Kubernetes
+controller how to create the required resources. The fields are `apiVersion`,
+`kind`, `metadata`, and `spec`[9]. For a Job, the API Version is `batch/v1`,
+the Kind is a "Job", the metadata will contain the name of the resource, and
+the spec will contain the configuration for that resource. We can also use a
+label to assign a name to our job, commonly the type of software used.
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-world
+spec:
+```
+
+The [specification for jobs][12] specifies that we need a container template
+specification. Container template specifications are typically used for Jobs,
+DaemonSets, ReplicaSets, and Deployments to configure how templates are made,
+and are very similar to the specification of a Pod.
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-world
+spec:
+  template:
+    spec:
+      containers:
+      - name: hello-world
+        image: debian:stretch
+        command: ["sh", "-c", "echo Hello World"]
+```
+
+This template specification would make a simple container that runs a
+"hello world" command. However, this Job is not complete. Unlike the normal
+specification for a Pod, the Job template specification *must* specify that a
+Pod either restarts on failure, or never restarts. As such, we must add the
+`RestartPolicy: Never` value.
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-world
+spec:
+  template:
+    spec:
+      containers:
+      - name: hello-world
+        image: debian:stretch
+        command: ["sh", "-c", "echo Hello World"]
+      restartPolicy: Never
+```
+
+You can apply the following configuration file by saving it to a file, such as
+"k8s-hello-world.yaml", then running `kubectl apply -f k8s-hello-world.yaml`.
+Once that is finished, you should be able to run the command `kubectl get
+hello-world`. To get the output of the pod, you can run the following command:
+`kubectl logs $(kubectl get pods --selector=job-name=hello-world
+--output=jsonpath='{.items[*].metadata.name}')`.
+
+We can now delete the Job, which will automatically clean up the Pod.
+
+```sh
+kubectl delete job/hello-world
+```
+
+However, what if we want a service that people are able to interact with?
+
+## Persistent Applications Via Deployments
+
+We can use a Deployment for this purpose. A Deployment ensures that a Pod
+running your container will always be available. We can make a Deployment in a
+simiar way to making a Job, but will be using the apiVersion of "apps/v1" and
+the kind of "Deployment". We will also need to set up a label with the name of
+the application so the Deployment will know how to track the Pods it creates.
 
 ```yaml
 apiVersion: apps/v1
@@ -155,7 +243,7 @@ metadata:
 spec:
 ```
 
-The specification for deployments[8] specifies that we need an amount of
+The [specification for deployments][8] specifies that we need an amount of
 replicas (how many pods of our container we want running), a selector to
 determine how to find our pods, and a specification for the pod.
 
@@ -284,6 +372,9 @@ clarify explanations of certain topics.
 EDIT-2020-08-17: Add sections "Why would I want Kubernetes", "Why not just use
 Docker Compose", and "Where is the State"
 
+EDIT-2020-08-27: Rewrite Hello World example to use a Job first, instead of a
+Deployment, as a Job is a more approachable oneshot for an introduction.
+
 [1]: https://kubernetes.io/#kubernetes-k8s-docs-concepts-overview-what-is-kubernetes-is-an-open-source-system-for-automating-deployment-scaling-and-management-of-containerized-applications
 [2]: https://kubernetes.io/docs/tutorials/kubernetes-basics/
 [3]: https://docs.cilium.io/en/v1.8/policy/language/#services-based
@@ -295,6 +386,7 @@ Docker Compose", and "Where is the State"
 [9]: https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
 [10]: https://hub.docker.com/r/nginxdemos/hello
 [11]: https://kubernetes.io/docs/concepts/services-networking/service/
+[12]: https://kubernetes.io/docs/concepts/workloads/controllers/job/
 [kind]: https://kind.sigs.k8s.io/
 [minikube]: https://minikube.sigs.k8s.io/docs/
 [microk8s]: https://microk8s.io/
