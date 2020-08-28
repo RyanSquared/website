@@ -20,7 +20,7 @@
     {{ with .OutputFormats.Get "RSS" -}}
     {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
     {{ end -}}
-    {{ with .Site.Data.pidcast.image }}{{ $image := resources.Get . }}<itunes:image href="{{ $image.Permalink }}" />{{ end }}
+    {{ with .Site.Data.podcast.image }}{{ $image := resources.Get . }}<itunes:image href="{{ $image.Permalink }}" />{{ end }}
     {{ with .Site.Data.podcast.category -}}
     <itunes:category {{ if .name }}text="{{ .name }}"{{end}}>
       {{ range .subcategories }}<itunes:category text="{{ . }}" />{{ end }}
