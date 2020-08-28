@@ -50,7 +50,7 @@
       <author>{{ . }}{{ with $.Site.Author.name }} ({{ . }}){{ end }}</author>
       {{ end -}}
       <description>{{ .Content | html }}</description>
-      {{ $p := .Params.podcast.length | default "0" -}}
+      {{ $p := .Params.podcast.file_size | default "0" -}}
       {{ with .Params.podcast.mp3_permalink }}<enclosure url="{{ . }}" length="{{ $p }}" type="audio/mpeg" />{{ end }}
       {{ with .Params.podcast.mp3 }}{{ $file_stat := os.Stat (add "/static" (. | relURL)) }}<enclosure url="{{ if $.Site.Data.podcast.cdn }}{{ add $.Site.Darams.podcast.cdn (. | relURL) }}{{ else }}{{ . | absURL }}{{ end }}" length="{{ $file_stat.Size }}" type="audio/mpeg" />{{ end }}
       {{ with .Params.podcast.duration }}<itunes:duration>{{ . }}</itunes:duration>{{ end }}
