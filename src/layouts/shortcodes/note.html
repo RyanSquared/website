@@ -1,0 +1,6 @@
+<!--
+- Positional argument 0: The note itself
+- Keyword argument `context`: To be determined whether or not I use in the
+  future; the context in which a note is made.
+-->
+<p><i>{{ or .Inner (.Get 0) | markdownify }}</i></p>
