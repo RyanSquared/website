@@ -7,7 +7,7 @@ tags = ["simplified", "kubernetes", "docker"]
 featured = true
 +++
 
-*This article assumes a basic knowledge of Docker.*
+{{< note "This article assumes a basic knowledge of Docker." />}}
 
 This is the first article in a series of posts called "Simplified", where I
 take a look at systems that I think aren't adequately explained in their own
